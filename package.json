@@ -5,7 +5,9 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": " node app.js",
+    "start:dev": "NODE_ENV=development node app.js",
+    "start": "NODE_ENV=production node app.js",
+
     "bundle": "webpack --mode=development -w"
   },
   "repository": {

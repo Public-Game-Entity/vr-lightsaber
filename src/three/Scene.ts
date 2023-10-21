@@ -25,7 +25,7 @@ class Scene {
     
     
         
-        this.camera = new THREE.PerspectiveCamera( 90, window.innerWidth / window.innerHeight, 1, 100 );
+        this.camera = new THREE.PerspectiveCamera( 90, window.innerWidth / window.innerHeight, 0.01, 100 );
         this.camera.position.set( 0, 3, 7 );
         this.scene.add(this.camera);
     
@@ -59,7 +59,7 @@ class Scene {
         mesh.receiveShadow = true;
         this.scene.add(mesh);
 
-        this.saber = new SaberModel()
+        this.saber = new SaberModel(this.renderer)
 
         this.scene.add(this.saber.model)
     
