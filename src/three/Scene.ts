@@ -1,4 +1,7 @@
 import * as THREE from 'three';
+import { VRButton } from 'three/examples/jsm/webxr/VRButton';
+import { SaberModel } from './Saber';
+
 
 class Scene {
     scene: any
@@ -6,6 +9,7 @@ class Scene {
     renderer: any
     controls: any
     blocks: any
+    saber: SaberModel;
 
     constructor() {
 
@@ -29,9 +33,12 @@ class Scene {
         this.renderer = new THREE.WebGLRenderer();
         this.renderer.setSize( window.innerWidth, window.innerHeight );
         this.renderer.shadowMap.enabled = true
-    
+        this.renderer.xr.enabled = true;
+        this.renderer.setAnimationLoop(this.animateXR.bind(this));
+
         document.querySelector("#screen").appendChild( this.renderer.domElement );
-        
+        document.querySelector("#screen").insertAdjacentElement("beforeend", VRButton.createButton( this.renderer ))
+
         const dirLight = new THREE.DirectionalLight( 0xffffff );
         dirLight.position.set( -40, 400, -70 );
         dirLight.shadow.camera.top = 150;
@@ -51,6 +58,10 @@ class Scene {
         mesh.rotation.x = - Math.PI / 2;
         mesh.receiveShadow = true;
         this.scene.add(mesh);
+
+        this.saber = new SaberModel()
+
+        this.scene.add(this.saber.model)
     
     
     
@@ -66,6 +77,17 @@ class Scene {
         this.renderer.render( this.scene, this.camera );
     }
 
+    animateXR() {
+        const controller = this.renderer.xr.getController(0); 
+        console.log(controller)
+
+        this.saber.model.position.set(controller.position.x, controller.position.y, controller.position.z)
+        this.saber.model.rotation.x = controller.rotation.x
+        this.saber.model.rotation.y = controller.rotation.y
+        this.saber.model.rotation.z = controller.rotation.z
+
+        this.renderer.render( this.scene, this.camera );
+    }
     
 }
 
