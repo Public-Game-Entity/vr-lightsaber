@@ -34,13 +34,32 @@ class SaberModel {
     addBlade() {
         const length = 1.6
         const geometry = new THREE.CylinderGeometry( 0.01, 0.01, length, 32 );
-        const material = new THREE.MeshBasicMaterial( {color: 0xa1cbff} );
-
+        const material = new THREE.MeshStandardMaterial();
+        material.emissive = new THREE.Color(0xa1cbff)
+        material.emissiveIntensity = 1
+        material.needsUpdate = true
 
         const cylinder = new THREE.Mesh( geometry, material );
         cylinder.position.y = length/2
 
+        for (let index = 0; index < 10; index++) {
+            this.addBladeLight({
+                cylinder: cylinder,
+                y: -1 + (index/5)
+            })            
+        }
+
+
         return cylinder
+    }
+
+    addBladeLight({ cylinder, y }: any) {
+        const light = new THREE.PointLight( 0xa1cbff );
+        light.intensity = 0.2
+        light.decay = 40
+        light.position.y = y
+
+        cylinder.add(light)
     }
 
     addBoundingBox() {
