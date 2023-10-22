@@ -69,6 +69,7 @@ class Scene {
         this.scene.add( helper );
         
         this.animate();
+
     }
 
     animate() {
@@ -79,7 +80,7 @@ class Scene {
 
     animateXR() {
         const controller = this.renderer.xr.getController(0); 
-        console.log(controller)
+        // console.log(controller)
 
         this.saber.model.position.set(controller.position.x, controller.position.y, controller.position.z)
         this.saber.model.rotation.x = controller.rotation.x
