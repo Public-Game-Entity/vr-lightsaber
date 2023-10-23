@@ -7,6 +7,7 @@ const port = 9056
 
 app.disable('x-powered-by');
 
+app.use('/public', express.static('public'));
 app.use('/', express.static('dist'));
 
 const options = {

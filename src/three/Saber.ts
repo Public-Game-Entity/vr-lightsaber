@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 class SaberModel {
     model: THREE.Mesh;
@@ -25,20 +26,67 @@ class SaberModel {
     }
 
     addModel() {
-        const geometry = new THREE.BoxGeometry( 0.05, 0.2, 0.05 ); 
-        const material = new THREE.MeshStandardMaterial()
-        material.metalness = 0.45
-        material.roughness = 0.65
+        // const geometry = new THREE.BoxGeometry( 0.05, 0.2, 0.05 ); 
+        // const material = new THREE.MeshStandardMaterial()
+        // material.metalness = 0.45
+        // material.roughness = 0.65
 
-        const cube = new THREE.Mesh( geometry, material ); 
-        cube.receiveShadow = true
-        cube.castShadow = true
-        cube.rotation.x = - Math.PI/3.6
+        // const cube = new THREE.Mesh( geometry, material ); 
+        // cube.receiveShadow = true
+        // cube.castShadow = true
+        // cube.rotation.x = - Math.PI/3.6
+
+        const addBoundingBox = new THREE.Mesh(); 
         
+        const loader = new GLTFLoader();
+
+        loader.load( '/public/saber.glb', ( gltf ) => {
+            this.isAvailable = true
+            const saber = gltf.scene
+            const scale = 0.02
+            saber.scale.set(scale, scale, scale)
+            saber.rotation.z = Math.PI/2
+            addBoundingBox.add(saber)
+        },
+        function ( xhr ) {
+    
+            console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+    
+        },
+        // called when loading has errors
+        function ( error ) {
+    
+            console.log( 'An error happened' );
+    
+        }
+    );
+
+        // const model = new Promise((resolve, reject) => {
+        //     loader.load( '/public/saber.glb', ( gltf ) => {
+        //         this.isAvailable = true
+        //         const saber = gltf.scene
+        //         saber.scale.set(0.01, 0.01, 0.01)
+        //         addBoundingBox.add()
+        //         resolve(gltf.scene)
+        //     },
+        //     function ( xhr ) {
+        
+        //         console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+        
+        //     },
+        //     // called when loading has errors
+        //     function ( error ) {
+        
+        //         console.log( 'An error happened' );
+        
+        //     }
+        // );
+        // })
 
 
-        this.isAvailable = true
-        return cube
+
+        return addBoundingBox
+
     }
 
     addBlade() {
@@ -125,11 +173,11 @@ class SaberModel {
 
         const addBoundingBox = new THREE.Mesh(); 
         const model = this.addModel()
-
         this.bladeModel = this.addBlade()
-        model.add(this.bladeModel)
 
+        model.add(this.bladeModel)
         addBoundingBox.add(model)
+
 
         return addBoundingBox
     }
