@@ -8,10 +8,11 @@ class SaberModel {
     model: THREE.Mesh;
     isAvailable: boolean;
     isOn: boolean;
-    renderer: any;
+    renderer: THREE.WebGLRenderer;
     bladeLength: number;
     bladeModel: THREE.Mesh;
     onInterval: NodeJS.Timer;
+
     constructor(renderer: any) {
         this.isAvailable = false
         this.isOn = false
@@ -19,7 +20,6 @@ class SaberModel {
         this.model = this.addBoundingBox()
         this.renderer = renderer
 
-        document.querySelector("body").addEventListener("click", this.switchBlade.bind(this))
         const controller1 = renderer.xr.getController(0);
         controller1.addEventListener('selectstart', this.switchBlade.bind(this));
     }
