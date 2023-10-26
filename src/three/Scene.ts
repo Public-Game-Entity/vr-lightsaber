@@ -68,12 +68,12 @@ class Scene {
         
         this.animate();
         this.sphere = []
-        this.addSphere()
+        // this.addSphere()
         // document.querySelector("body").addEventListener("click", this.shotGun.bind(this))
 
-        setInterval(() => {
-            this.shotGun()
-        }, 1000)
+        // setInterval(() => {
+        //     this.shotGun()
+        // }, 1000)
 
 
     }
