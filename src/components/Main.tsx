@@ -14,7 +14,7 @@ const Main = ({ isOpen = true }: MainType) => {
         <div style={{ display: isOpen ? "flex" : "none", justifyContent: "center", position: "absolute", width: '100%'}}>
             <div style={{ padding: "3rem 4rem" }}>
                 <Title>Light Saber</Title>
-                <SubTitle>This game is now the ultimate power in the universe!</SubTitle>
+                <SubTitle>This game is now the ultimate power in the universe! Play with VR</SubTitle>
                 <SubTitle>- <a href="https://hhj.devent.kr/">@huh.hyeongjun</a></SubTitle>
 
             </div>

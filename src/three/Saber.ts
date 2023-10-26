@@ -6,7 +6,6 @@ import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OBB } from 'three/examples/jsm/math/OBB';
 
-import { Collision } from './Collision';
 
 class SaberModel {
     model: THREE.Mesh;
@@ -18,7 +17,7 @@ class SaberModel {
     onInterval: NodeJS.Timer;
     obb: OBB
 
-    constructor(renderer: any) {
+    constructor(renderer: THREE.WebGLRenderer) {
         this.isAvailable = false
         this.isOn = false
         this.bladeLength = 0
@@ -30,16 +29,6 @@ class SaberModel {
     }
 
     addModel() {
-        // const geometry = new THREE.BoxGeometry( 0.05, 0.2, 0.05 ); 
-        // const material = new THREE.MeshStandardMaterial()
-        // material.metalness = 0.45
-        // material.roughness = 0.65
-
-        // const cube = new THREE.Mesh( geometry, material ); 
-        // cube.receiveShadow = true
-        // cube.castShadow = true
-        // cube.rotation.x = - Math.PI/3.6
-
         const addBoundingBox = new THREE.Mesh(); 
         
         const loader = new GLTFLoader();
@@ -52,24 +41,14 @@ class SaberModel {
             saber.rotation.z = Math.PI/2
 
             addBoundingBox.add(saber)
-        },
-        function ( xhr ) {
-    
+        }, function ( xhr ) {
             console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
     
-        },
-        // called when loading has errors
-        function ( error ) {
-    
+        }, function ( error ) {
             console.log( 'An error happened' );
-    
-        }
-    );
-
-
+        });
 
         return addBoundingBox
-
     }
 
     addBlade() {
@@ -95,11 +74,9 @@ class SaberModel {
         return cylinder
     }
 
-    setBladeLength({ scale }: any) {
+    setBladeLength({ scale }: { scale: number }) {
         this.bladeModel.scale.y = scale
         this.bladeModel.position.y = scale/2 + 0.1
-
-        console.log(this.bladeModel.scale)
     }
 
 
@@ -143,7 +120,7 @@ class SaberModel {
         }, 40)
     }
 
-    addBladeLight({ cylinder, y }: any) {
+    addBladeLight({ cylinder, y }: { cylinder: THREE.Mesh, y: number }) {
         const light = new THREE.PointLight( 0xa1cbff );
         light.intensity = 0.5
         light.decay = 400
@@ -158,7 +135,7 @@ class SaberModel {
         const addBoundingBox = new THREE.Mesh(); 
         const model = this.addModel()
         this.bladeModel = this.addBlade()
-        this.obb = new OBB(this.bladeModel.position, new THREE.Vector3(0.5,0.5,0.5))
+        this.obb = new OBB(this.bladeModel.position, new THREE.Vector3(0.01,1.2,0.01))
         const boxHelper = new THREE.BoxHelper( this.bladeModel, 0xffff67)
 
         model.add(this.bladeModel)

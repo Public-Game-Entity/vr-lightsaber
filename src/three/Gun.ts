@@ -13,7 +13,6 @@ class GunModel {
     }
 
     shot() {
-        console.log(this)
         const bulletClass = new Bullet(this.scene)
         this.bullets.push(bulletClass)
     }
@@ -60,7 +59,7 @@ class Bullet {
         cube.position.y = 1
         this.scene.add( cube );
         this.isAvailable = true
-        this.obb = new OBB(cube.position, new THREE.Vector3(0.1,0.1,0.1))
+        this.obb = new OBB(cube.position, new THREE.Vector3(0.05,0.05,0.05))
         return cube
     }
 }

@@ -3,6 +3,7 @@ import { VRButton } from 'three/examples/jsm/webxr/VRButton';
 import { SaberModel } from './Saber';
 import { GunModel } from './Gun';
 import { Collision } from './Collision';
+import { Cube } from './Cube';
 
 
 class Scene {
@@ -63,11 +64,26 @@ class Scene {
         this.gun = new GunModel(this.scene)
         this.collisionDetect = new Collision()
     
-        const helper = new THREE.CameraHelper( dirLight.shadow.camera );
-        this.scene.add( helper );
+        // const helper = new THREE.CameraHelper( dirLight.shadow.camera );
+        // this.scene.add( helper );
+
+        const newCube = new Cube({
+            x: 2,
+            y: 1,
+            z: -2,
+
+            xw: 1,
+            yw: 4,
+            zw: 2
+        })
+
+        const newCubeMesh = newCube.create()
+
+        this.scene.add(newCubeMesh)
         
         this.animate();
         this.sphere = []
+        
         // this.addSphere()
         // document.querySelector("body").addEventListener("click", this.shotGun.bind(this))
 
@@ -101,43 +117,17 @@ class Scene {
 
         const vector = this.saber.bladeModel.getWorldDirection(new THREE.Vector3(0,10,0));
 
+        this.saber.bladeModel.updateMatrixWorld();
+
         this.saber.obb.center = this.saber.model.position
+        this.saber.obb.applyMatrix4(this.saber.bladeModel.matrixWorld) 
+
+        console.log(this.saber.bladeModel.rotation)
 
         for (let index = 0; index < this.gun.bullets.length; index++) {
 
             const isCollide  = this.saber.obb.intersectsOBB(this.gun.bullets[index].obb)
 
-            // for (let index = 0; index <  this.sphere.length; index++) {
-            //     this.sphere[index].position.x = this.saber.model.position.x + vector.x
-            //     this.sphere[index].position.y = this.saber.model.position.y + vector.y
-            //     this.sphere[index].position.z = this.saber.model.position.z + vector.z
-
-            //     // this.sphere[index].position.add(vector.multiplyScalar(0.5));
-
-            // }
-
-            // const isCollide = this.collisionDetect.checkSphere({
-            //     sphere1: {
-            //         x: this.gun.bullets[index].model.position.x,
-            //         y: this.gun.bullets[index].model.position.y,
-            //         z: this.gun.bullets[index].model.position.z,
-            //         scale: 0.1
-
-            //     },
-            //     sphere2: {
-            //         x: this.saber.model.position.x,
-            //         y: this.saber.model.position.y,
-            //         z: this.saber.model.position.z,
-            //         scale: 0.1
-
-            //     }
-            // })
-
-
-
-
-
-            // console.log(isCollide)
             if (isCollide) {
                 this.gun.bullets[index].velocity.z = -0.1
             }
