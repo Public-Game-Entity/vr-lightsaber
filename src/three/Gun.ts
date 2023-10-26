@@ -25,7 +25,12 @@ class GunModel {
             }
             element.model.position.z += element.velocity.z
             element.model.position.y += element.velocity.y
-            element.model.position.z += element.velocity.z
+            element.model.position.x += element.velocity.x
+
+            const e = new THREE.Euler( element.velocity.x, element.velocity.y, element.velocity.z, 'XYZ' );
+            const mx = new THREE.Matrix4().lookAt(new THREE.Vector3(element.velocity.x, element.velocity.y, element.velocity.z),new THREE.Vector3(0,0,0),new THREE.Vector3(0,1,0));
+            const qt = new THREE.Quaternion().setFromRotationMatrix(mx);
+            element.model.rotation.setFromQuaternion( qt )
 
             element.obb.center = element.model.position
         }
@@ -36,17 +41,20 @@ class Bullet {
     model: THREE.Mesh;
     scene: THREE.Scene;
     isAvailable: boolean;
+    isCollisionAvailable: boolean;
+
     velocity: { x: number; y: number; z: number; };
     obb: OBB;
 
     constructor(scene: THREE.Scene) {
         this.isAvailable = false
+        this.isCollisionAvailable = true
         this.scene = scene
         this.model = this.addModel()
         this.velocity = {
-            x: 0,
-            y: 0,
-            z: 0.1
+            x: 0.00000000001,
+            y: 0.00000000001,
+            z: 0.2
         }
 
     }
@@ -55,11 +63,11 @@ class Bullet {
         const geometry = new THREE.BoxGeometry( 0.1, 0.1, 1 ); 
         const material = new THREE.MeshBasicMaterial( {color: 0x00ff00} ); 
         const cube = new THREE.Mesh( geometry, material ); 
-        cube.position.z = -10
+        cube.position.z = -30
         cube.position.y = 1
         this.scene.add( cube );
         this.isAvailable = true
-        this.obb = new OBB(cube.position, new THREE.Vector3(0.05,0.05,0.05))
+        this.obb = new OBB(cube.position, new THREE.Vector3(0.07,0.07,0.07))
         return cube
     }
 }

@@ -114,30 +114,22 @@ class Scene {
         this.saber.model.rotation.z = controller.rotation.z
 
         this.gun.animateBullet()
-
-        const vector = this.saber.bladeModel.getWorldDirection(new THREE.Vector3(0,10,0));
-
-        // this.saber.bladeModel.updateMatrixWorld();
-
-        this.saber.obb.center = this.saber.model.position
-        // this.saber.obb.applyMatrix4(this.saber.bladeModel.matrixWorld) 
-        
-
+        this.saber.obb.center = this.saber.model.position        
         this.saber.obb.rotation.setFromMatrix4(this.saber.bladeModel.matrixWorld)
 
-        // console.log(this.saber.bladeModel.rotation)
-
         for (let index = 0; index < this.gun.bullets.length; index++) {
+            if (this.gun.bullets[index].isCollisionAvailable == false) {
+                continue
+            }
 
             const isCollide  = this.saber.obb.intersectsOBB(this.gun.bullets[index].obb)
 
             if (isCollide) {
-                this.gun.bullets[index].velocity.z = -0.1
-
+                this.gun.bullets[index].velocity.z = -this.gun.bullets[index].velocity.z
+                this.gun.bullets[index].velocity.x = (Math.random() - 0.5) / 50
+                this.gun.bullets[index].velocity.y = (Math.random() - 0.5) / 40
+                this.gun.bullets[index].isCollisionAvailable = false
             }
-            
-            // console.log(isCollide)
-
         }
 
         this.renderer.render( this.scene, this.camera );
