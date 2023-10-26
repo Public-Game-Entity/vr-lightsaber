@@ -83,13 +83,13 @@ class Scene {
         
         this.animate();
         this.sphere = []
-        
+
         // this.addSphere()
         // document.querySelector("body").addEventListener("click", this.shotGun.bind(this))
 
-        // setInterval(() => {
-        //     this.shotGun()
-        // }, 1000)
+        setInterval(() => {
+            this.shotGun()
+        }, 1000)
 
 
     }
@@ -117,12 +117,15 @@ class Scene {
 
         const vector = this.saber.bladeModel.getWorldDirection(new THREE.Vector3(0,10,0));
 
-        this.saber.bladeModel.updateMatrixWorld();
+        // this.saber.bladeModel.updateMatrixWorld();
 
         this.saber.obb.center = this.saber.model.position
-        this.saber.obb.applyMatrix4(this.saber.bladeModel.matrixWorld) 
+        // this.saber.obb.applyMatrix4(this.saber.bladeModel.matrixWorld) 
+        
 
-        console.log(this.saber.bladeModel.rotation)
+        this.saber.obb.rotation.setFromMatrix4(this.saber.bladeModel.matrixWorld)
+
+        // console.log(this.saber.bladeModel.rotation)
 
         for (let index = 0; index < this.gun.bullets.length; index++) {
 
@@ -130,9 +133,10 @@ class Scene {
 
             if (isCollide) {
                 this.gun.bullets[index].velocity.z = -0.1
+
             }
             
-            console.log(isCollide)
+            // console.log(isCollide)
 
         }
 
