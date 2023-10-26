@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 
+import { OBB } from 'three/examples/jsm/math/OBB';
 
 class GunModel {
     scene: THREE.Scene;
@@ -23,8 +24,11 @@ class GunModel {
             if (element.isAvailable == false) {
                 continue
             }
-            
-            element.model.position.z += 0.1
+            element.model.position.z += element.velocity.z
+            element.model.position.y += element.velocity.y
+            element.model.position.z += element.velocity.z
+
+            element.obb.center = element.model.position
         }
     }
 }
@@ -33,10 +37,18 @@ class Bullet {
     model: THREE.Mesh;
     scene: THREE.Scene;
     isAvailable: boolean;
+    velocity: { x: number; y: number; z: number; };
+    obb: OBB;
+
     constructor(scene: THREE.Scene) {
         this.isAvailable = false
         this.scene = scene
         this.model = this.addModel()
+        this.velocity = {
+            x: 0,
+            y: 0,
+            z: 0.1
+        }
 
     }
 
@@ -45,9 +57,10 @@ class Bullet {
         const material = new THREE.MeshBasicMaterial( {color: 0x00ff00} ); 
         const cube = new THREE.Mesh( geometry, material ); 
         cube.position.z = -10
-        cube.position.y = 2
+        cube.position.y = 1
         this.scene.add( cube );
         this.isAvailable = true
+        this.obb = new OBB(cube.position, new THREE.Vector3(0.1,0.1,0.1))
         return cube
     }
 }

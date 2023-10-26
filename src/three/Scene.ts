@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { VRButton } from 'three/examples/jsm/webxr/VRButton';
 import { SaberModel } from './Saber';
 import { GunModel } from './Gun';
+import { Collision } from './Collision';
 
 
 class Scene {
@@ -10,6 +11,8 @@ class Scene {
     renderer: THREE.WebGLRenderer
     saber: SaberModel;
     gun: GunModel;
+    collisionDetect: Collision;
+    sphere: THREE.Mesh[];
 
     constructor() {
 
@@ -58,12 +61,19 @@ class Scene {
         this.scene.add(this.saber.model)
 
         this.gun = new GunModel(this.scene)
+        this.collisionDetect = new Collision()
     
         const helper = new THREE.CameraHelper( dirLight.shadow.camera );
         this.scene.add( helper );
         
         this.animate();
-        document.querySelector("body").addEventListener("click", this.shotGun.bind(this))
+        this.sphere = []
+        this.addSphere()
+        // document.querySelector("body").addEventListener("click", this.shotGun.bind(this))
+
+        setInterval(() => {
+            this.shotGun()
+        }, 1000)
 
 
     }
@@ -89,7 +99,63 @@ class Scene {
 
         this.gun.animateBullet()
 
+        const vector = this.saber.bladeModel.getWorldDirection(new THREE.Vector3(0,10,0));
+
+        this.saber.obb.center = this.saber.model.position
+
+        for (let index = 0; index < this.gun.bullets.length; index++) {
+
+            const isCollide  = this.saber.obb.intersectsOBB(this.gun.bullets[index].obb)
+
+            // for (let index = 0; index <  this.sphere.length; index++) {
+            //     this.sphere[index].position.x = this.saber.model.position.x + vector.x
+            //     this.sphere[index].position.y = this.saber.model.position.y + vector.y
+            //     this.sphere[index].position.z = this.saber.model.position.z + vector.z
+
+            //     // this.sphere[index].position.add(vector.multiplyScalar(0.5));
+
+            // }
+
+            // const isCollide = this.collisionDetect.checkSphere({
+            //     sphere1: {
+            //         x: this.gun.bullets[index].model.position.x,
+            //         y: this.gun.bullets[index].model.position.y,
+            //         z: this.gun.bullets[index].model.position.z,
+            //         scale: 0.1
+
+            //     },
+            //     sphere2: {
+            //         x: this.saber.model.position.x,
+            //         y: this.saber.model.position.y,
+            //         z: this.saber.model.position.z,
+            //         scale: 0.1
+
+            //     }
+            // })
+
+
+
+
+
+            // console.log(isCollide)
+            if (isCollide) {
+                this.gun.bullets[index].velocity.z = -0.1
+            }
+            
+            console.log(isCollide)
+
+        }
+
         this.renderer.render( this.scene, this.camera );
+    }
+
+
+    addSphere() {
+        const geometry = new THREE.SphereGeometry( 0.1, 32, 16 ); 
+        const material = new THREE.MeshBasicMaterial( { color: 0xffff00 } ); 
+        const sphere = new THREE.Mesh( geometry, material ); 
+        this.sphere.push(sphere)
+        this.scene.add( sphere );
     }
     
 }
