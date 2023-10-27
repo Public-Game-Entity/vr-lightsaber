@@ -50,18 +50,37 @@ class Bullet {
         this.isAvailable = false
         this.isCollisionAvailable = true
         this.scene = scene
-        this.model = this.addModel()
         this.velocity = {
             x: 0.00000000001,
             y: 0.00000000001,
             z: 0.2
         }
+        this.model = this.addModel()
 
+
+    }
+
+    radianToPosition({ angle, offset }: { angle: number; offset: number }) {
+        const x = Math.cos(angle * Math.PI / 180) * offset
+        const y = Math.sin(angle * Math.PI / 180) * offset
+    
+        return { x: x, y: y }
     }
 
     addModel() {
         const addBoundingBox = new THREE.Mesh(); 
-        addBoundingBox.position.z = -30
+        const randomAngle = 170 + Math.random() * 30
+        const randomPosition = this.radianToPosition({ angle: randomAngle, offset: 20 })
+        addBoundingBox.position.z = randomPosition.x
+        addBoundingBox.position.x = randomPosition.y
+
+        const dir = new THREE.Vector3(); 
+
+        const dirVector = dir.subVectors( new THREE.Vector3(0,2, 1), new THREE.Vector3(addBoundingBox.position.x, addBoundingBox.position.y, addBoundingBox.position.z) ).normalize();
+        console.log(dirVector)
+        this.velocity.z = dirVector.z / 10
+        this.velocity.x = dirVector.x / 10
+
         addBoundingBox.position.y = 1
         const geometry = new THREE.CapsuleGeometry( 0.06, 1, 4, 8 ); 
 

@@ -112,6 +112,9 @@ class Scene {
         const controller = this.renderer.xr.getController(0); 
         // console.log(controller)
 
+        // const session = this.renderer.xr.getSession();
+        // session.inputSources[0].gamepad.vibrationActuator.playEffect("dual-rumble", )
+
         this.saber.model.position.set(controller.position.x, controller.position.y, controller.position.z)
         this.saber.model.rotation.x = controller.rotation.x
         this.saber.model.rotation.y = controller.rotation.y
@@ -130,7 +133,7 @@ class Scene {
 
             if (isCollide) {
                 this.gun.bullets[index].velocity.z = -this.gun.bullets[index].velocity.z
-                this.gun.bullets[index].velocity.x = (Math.random() - 0.5) / 50
+                this.gun.bullets[index].velocity.x = -(this.gun.bullets[index].velocity.x + (Math.random() - 0.5) / 50)
                 this.gun.bullets[index].velocity.y = (Math.random() - 0.5) / 40
                 this.gun.bullets[index].isCollisionAvailable = false
             }
