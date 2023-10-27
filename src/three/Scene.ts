@@ -5,6 +5,7 @@ import { GunModel } from './Gun';
 import { Collision } from './Collision';
 import { Cube } from './Cube';
 
+import { Sky } from 'three/examples/jsm/objects/Sky';
 
 class Scene {
     scene: THREE.Scene
@@ -14,6 +15,7 @@ class Scene {
     gun: GunModel;
     collisionDetect: Collision;
     sphere: THREE.Mesh[];
+    skybox: SkyBox;
 
     constructor() {
 
@@ -22,8 +24,8 @@ class Scene {
 
     async init() {
         this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color( 0x000000 );
-        this.scene.fog = new THREE.Fog( 0xa0a0a0, 10, 50 );
+        this.scene.background = new THREE.Color( 0xffffff );
+        this.scene.fog = new THREE.Fog( 0xeddfdf, 10, 50 );
     
         
         this.camera = new THREE.PerspectiveCamera( 90, window.innerWidth / window.innerHeight, 0.01, 100 );
@@ -80,6 +82,8 @@ class Scene {
         const newCubeMesh = newCube.create()
 
         this.scene.add(newCubeMesh)
+
+        this.skybox = new SkyBox(this.scene, this.renderer)
         
         this.animate();
         this.sphere = []
@@ -144,6 +148,53 @@ class Scene {
         this.scene.add( sphere );
     }
     
+}
+
+
+class SkyBox {
+    sky: Sky;
+    scene: any;
+    sun: THREE.Vector3;
+    renderer: any;
+    constructor(scene: any, renderer: any) {
+        this.scene = scene
+        this.renderer = renderer
+        this.initSky()
+    }
+
+    initSky() {
+
+        this.sky = new Sky();
+        this.sky.scale.setScalar( 450000 );
+        this.scene.add( this.sky );
+
+        this.sun = new THREE.Vector3();
+
+        const effectController = {
+            turbidity: 10,
+            rayleigh: 3,
+            mieCoefficient: 0.005,
+            mieDirectionalG: 0.7,
+            elevation: 2,
+            azimuth: 210,
+            exposure: this.renderer.toneMappingExposure
+        };
+
+        const uniforms = this.sky.material.uniforms;
+        uniforms[ 'turbidity' ].value = effectController.turbidity;
+        uniforms[ 'rayleigh' ].value = effectController.rayleigh;
+        uniforms[ 'mieCoefficient' ].value = effectController.mieCoefficient;
+        uniforms[ 'mieDirectionalG' ].value = effectController.mieDirectionalG;
+
+        const phi = THREE.MathUtils.degToRad( 90 - effectController.elevation );
+        const theta = THREE.MathUtils.degToRad( effectController.azimuth );
+
+        this.sun.setFromSphericalCoords( 1, phi, theta );
+
+        uniforms[ 'sunPosition' ].value.copy( this.sun );
+
+        this.renderer.toneMappingExposure = effectController.exposure;
+    }
 }
 
 
