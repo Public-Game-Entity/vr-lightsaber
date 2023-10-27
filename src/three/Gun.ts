@@ -60,15 +60,29 @@ class Bullet {
     }
 
     addModel() {
-        const geometry = new THREE.BoxGeometry( 0.1, 0.1, 1 ); 
-        const material = new THREE.MeshBasicMaterial( {color: 0x00ff00} ); 
+        const addBoundingBox = new THREE.Mesh(); 
+        addBoundingBox.position.z = -30
+        addBoundingBox.position.y = 1
+        const geometry = new THREE.CapsuleGeometry( 0.06, 1, 4, 8 ); 
+
+        // const geometry = new THREE.BoxGeometry( 0.1, 0.1, 1 ); 
+        const material = new THREE.MeshBasicMaterial( {color: 0xf73c28} ); 
         const cube = new THREE.Mesh( geometry, material ); 
-        cube.position.z = -30
-        cube.position.y = 1
-        this.scene.add( cube );
+
+        cube.rotation.x = Math.PI/2
+
+        // const light = new THREE.PointLight( 0xf73c28 );
+        // light.intensity = 100
+        // light.decay = 40
+        // light.distance = 10
+        // cube.add(light)
+
+        addBoundingBox.add(cube)
+
+        this.scene.add( addBoundingBox );
         this.isAvailable = true
-        this.obb = new OBB(cube.position, new THREE.Vector3(0.07,0.07,0.07))
-        return cube
+        this.obb = new OBB(addBoundingBox.position, new THREE.Vector3(0.07,0.07,0.07))
+        return addBoundingBox
     }
 }
 
