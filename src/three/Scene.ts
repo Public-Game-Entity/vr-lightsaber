@@ -93,7 +93,7 @@ class Scene {
 
         setInterval(() => {
             this.shotGun()
-        }, 1000)
+        }, 500)
 
 
     }

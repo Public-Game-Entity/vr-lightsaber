@@ -5,6 +5,8 @@ import { OBB } from 'three/examples/jsm/math/OBB';
 class GunModel {
     scene: THREE.Scene;
     bullets: Bullet[];
+    prevTime: number;
+    nowTime: number;
 
     constructor(scene: THREE.Scene) {
         this.scene = scene
@@ -18,14 +20,18 @@ class GunModel {
     }
 
     animateBullet() {
+        this.nowTime = Date.now()
+
         for (let index = 0; index < this.bullets.length; index++) {
+            const deltaTime = this.nowTime - this.prevTime 
+
             const element = this.bullets[index];
             if (element.isAvailable == false) {
                 continue
             }
-            element.model.position.z += element.velocity.z
-            element.model.position.y += element.velocity.y
-            element.model.position.x += element.velocity.x
+            element.model.position.z += element.velocity.z * deltaTime
+            element.model.position.y += element.velocity.y * deltaTime
+            element.model.position.x += element.velocity.x * deltaTime
 
             const e = new THREE.Euler( element.velocity.x, element.velocity.y, element.velocity.z, 'XYZ' );
             const mx = new THREE.Matrix4().lookAt(new THREE.Vector3(element.velocity.x, element.velocity.y, element.velocity.z),new THREE.Vector3(0,0,0),new THREE.Vector3(0,1,0));
@@ -34,6 +40,9 @@ class GunModel {
 
             element.obb.center = element.model.position
         }
+
+        this.prevTime = Date.now()
+
     }
 }
 
@@ -78,8 +87,8 @@ class Bullet {
 
         const dirVector = dir.subVectors( new THREE.Vector3(0,2, 1), new THREE.Vector3(addBoundingBox.position.x, addBoundingBox.position.y, addBoundingBox.position.z) ).normalize();
         console.log(dirVector)
-        this.velocity.z = dirVector.z / 10
-        this.velocity.x = dirVector.x / 10
+        this.velocity.z = dirVector.z / 100
+        this.velocity.x = dirVector.x / 100
 
         addBoundingBox.position.y = 1
         const geometry = new THREE.CapsuleGeometry( 0.06, 1, 4, 8 ); 
