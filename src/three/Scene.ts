@@ -16,6 +16,8 @@ class Scene {
     collisionDetect: Collision;
     sphere: THREE.Mesh[];
     skybox: SkyBox;
+    listener: THREE.AudioListener;
+    sound: any;
 
     constructor() {
 
@@ -31,6 +33,14 @@ class Scene {
         this.camera = new THREE.PerspectiveCamera( 90, window.innerWidth / window.innerHeight, 0.01, 100 );
         this.camera.position.set( 0, 3, 7 );
         this.scene.add(this.camera);
+
+        this.listener = new THREE.AudioListener();
+        this.camera.add( this.listener );
+
+        this.sound = {}
+
+
+
     
     
         this.renderer = new THREE.WebGLRenderer();
@@ -89,13 +99,46 @@ class Scene {
         this.sphere = []
 
         // this.addSphere()
-        // document.querySelector("body").addEventListener("click", this.shotGun.bind(this))
+        document.querySelector("body").addEventListener("click", this.playIdleSound.bind(this))
 
         setInterval(() => {
             this.shotGun()
         }, 500)
 
 
+    }
+
+    playIdleSound() {
+        const idle = new Sound(this.listener, "/public/sound/idle.mp3", true, true)
+        this.sound.idle = idle
+        
+        const on = new Sound(this.listener, "/public/sound/on.mp3", false, false)
+        this.sound.on = on
+
+        const off = new Sound(this.listener, "/public/sound/off.mp3", false, false)
+        this.sound.off = off
+
+        const impact1 = new Sound(this.listener, "/public/sound/impact1.mp3", true, false)
+        this.sound['impact1'] = impact1
+
+        const impact2 = new Sound(this.listener, "/public/sound/deflection.mp3", true, false)
+        this.sound['impact2'] = impact2
+
+        const impact3 = new Sound(this.listener, "/public/sound/impact2.mp3", true, false)
+        this.sound['impact3'] = impact3
+
+
+    }
+
+    playImpactSound() {
+        for (let index = 0; index < 3; index++) {
+            const objectName = 'impact'+(index+1)
+            console.log(this.sound, this.sound[objectName], objectName)
+            if (this.sound[objectName].sound.isPlaying == false) {
+                this.sound[objectName].sound.play()
+                break
+            }
+        }
     }
 
     shotGun() {
@@ -132,10 +175,13 @@ class Scene {
             const isCollide  = this.saber.obb.intersectsOBB(this.gun.bullets[index].obb)
 
             if (isCollide) {
+                this.playImpactSound()
+
                 this.gun.bullets[index].velocity.z = -this.gun.bullets[index].velocity.z
                 this.gun.bullets[index].velocity.x = -(this.gun.bullets[index].velocity.x + (Math.random() - 0.5) / 50)
                 this.gun.bullets[index].velocity.y = (Math.random() - 0.5) / 40
                 this.gun.bullets[index].isCollisionAvailable = false
+
             }
         }
 
@@ -201,6 +247,30 @@ class SkyBox {
 }
 
 
+class Sound {
+    listener: THREE.AudioListener;
+    sound: THREE.Audio<GainNode>;
+
+    constructor(listener: THREE.AudioListener, audioURL: string, isPlay: boolean, isLoop: boolean) {
+        this.listener = listener
+        this.sound = new THREE.Audio( this.listener );
+
+        const audioLoader = new THREE.AudioLoader();
+        audioLoader.load( audioURL, ( buffer ) => {
+            this.sound.setBuffer( buffer );
+            this.sound.setLoop( isLoop );
+            this.sound.setVolume( 0.4 );
+            console.log(this.sound, isPlay)
+            if (isPlay) {
+                this.sound.play();
+            }
+        });
+    }
+
+    play() {
+        this.sound.play();
+    }
+}
 
 
 export { Scene }

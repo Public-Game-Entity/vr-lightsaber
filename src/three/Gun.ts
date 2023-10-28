@@ -90,7 +90,7 @@ class Bullet {
         this.velocity.z = dirVector.z / 100
         this.velocity.x = dirVector.x / 100
 
-        addBoundingBox.position.y = 1
+        addBoundingBox.position.y = 1.3
         const geometry = new THREE.CapsuleGeometry( 0.06, 1, 4, 8 ); 
 
         // const geometry = new THREE.BoxGeometry( 0.1, 0.1, 1 ); 
