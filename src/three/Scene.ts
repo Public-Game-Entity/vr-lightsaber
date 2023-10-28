@@ -39,10 +39,6 @@ class Scene {
 
         this.sound = {}
 
-
-
-    
-    
         this.renderer = new THREE.WebGLRenderer();
         this.renderer.setSize( window.innerWidth, window.innerHeight );
         this.renderer.shadowMap.enabled = true
@@ -70,7 +66,7 @@ class Scene {
         mesh.receiveShadow = true;
         this.scene.add(mesh);
 
-        this.saber = new SaberModel(this.renderer)
+        this.saber = new SaberModel(this.renderer, this.listener)
         this.scene.add(this.saber.model)
 
         this.gun = new GunModel(this.scene)
@@ -112,19 +108,15 @@ class Scene {
         const idle = new Sound(this.listener, "/public/sound/idle.mp3", true, true)
         this.sound.idle = idle
         
-        const on = new Sound(this.listener, "/public/sound/on.mp3", false, false)
-        this.sound.on = on
 
-        const off = new Sound(this.listener, "/public/sound/off.mp3", false, false)
-        this.sound.off = off
 
-        const impact1 = new Sound(this.listener, "/public/sound/impact1.mp3", true, false)
+        const impact1 = new Sound(this.listener, "/public/sound/impact1.mp3", false, false)
         this.sound['impact1'] = impact1
 
-        const impact2 = new Sound(this.listener, "/public/sound/deflection.mp3", true, false)
+        const impact2 = new Sound(this.listener, "/public/sound/deflection.mp3", false, false)
         this.sound['impact2'] = impact2
 
-        const impact3 = new Sound(this.listener, "/public/sound/impact2.mp3", true, false)
+        const impact3 = new Sound(this.listener, "/public/sound/impact2.mp3", false, false)
         this.sound['impact3'] = impact3
 
 
@@ -133,7 +125,6 @@ class Scene {
     playImpactSound() {
         for (let index = 0; index < 3; index++) {
             const objectName = 'impact'+(index+1)
-            console.log(this.sound, this.sound[objectName], objectName)
             if (this.sound[objectName].sound.isPlaying == false) {
                 this.sound[objectName].sound.play()
                 break
@@ -155,7 +146,9 @@ class Scene {
         const controller = this.renderer.xr.getController(0); 
         // console.log(controller)
 
-        // const session = this.renderer.xr.getSession();
+
+
+        const session = this.renderer.xr.getSession();
         // session.inputSources[0].gamepad.vibrationActuator.playEffect("dual-rumble", )
 
         this.saber.model.position.set(controller.position.x, controller.position.y, controller.position.z)
@@ -172,6 +165,7 @@ class Scene {
                 continue
             }
 
+            
             const isCollide  = this.saber.obb.intersectsOBB(this.gun.bullets[index].obb)
 
             if (isCollide) {
@@ -184,6 +178,8 @@ class Scene {
 
             }
         }
+
+
 
         this.renderer.render( this.scene, this.camera );
     }
@@ -260,17 +256,16 @@ class Sound {
             this.sound.setBuffer( buffer );
             this.sound.setLoop( isLoop );
             this.sound.setVolume( 0.4 );
-            console.log(this.sound, isPlay)
             if (isPlay) {
                 this.sound.play();
             }
         });
     }
 
-    play() {
+    public play() {
         this.sound.play();
     }
 }
 
 
-export { Scene }
+export { Scene, Sound }

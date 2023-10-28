@@ -5,6 +5,7 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OBB } from 'three/examples/jsm/math/OBB';
+import { Sound } from './Scene';
 
 
 class SaberModel {
@@ -16,16 +17,29 @@ class SaberModel {
     bladeModel: THREE.Mesh;
     onInterval: NodeJS.Timer;
     obb: OBB
+    sound: any;
+    listener: THREE.AudioListener;
 
-    constructor(renderer: THREE.WebGLRenderer) {
+    constructor(renderer: THREE.WebGLRenderer, listener: THREE.AudioListener) {
+        this.listener = listener
         this.isAvailable = false
-        this.isOn = false
+        this.isOn = true
         this.bladeLength = 0
         this.model = this.addBoundingBox()
         this.renderer = renderer
+        this.sound = {}
+        this.initSound()
 
         const controller1 = renderer.xr.getController(0);
         controller1.addEventListener('selectstart', this.switchBlade.bind(this));
+    }
+
+    initSound() {
+        const on = new Sound(this.listener, "/public/sound/on.mp3", false, false)
+        this.sound.on = on
+
+        const off = new Sound(this.listener, "/public/sound/off.mp3", false, false)
+        this.sound.off = off
     }
 
     addModel() {
@@ -84,10 +98,14 @@ class SaberModel {
     switchBlade() {
         if (this.isOn) {
             this.offBlade()
+            this.sound.off.play()
+
             return 0
         }
 
         this.onBlade()
+        this.sound.on.play()
+        
     }
 
     onBlade() {

@@ -86,7 +86,6 @@ class Bullet {
         const dir = new THREE.Vector3(); 
 
         const dirVector = dir.subVectors( new THREE.Vector3(0,2, 1), new THREE.Vector3(addBoundingBox.position.x, addBoundingBox.position.y, addBoundingBox.position.z) ).normalize();
-        console.log(dirVector)
         this.velocity.z = dirVector.z / 100
         this.velocity.x = dirVector.x / 100
 
