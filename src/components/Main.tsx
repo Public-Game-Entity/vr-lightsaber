@@ -32,7 +32,7 @@ const Title = ({ children }: TitleType) => {
 
 const SubTitle = ({ children }: TitleType) => {
     return (
-        <div style={{ textAlign: "center", color: "#bdc1c7", fontSize: "1rem", fontFamily: "'Noto Sans KR', sans-serif", fontWeight: "500", marginTop: "1rem" }}>{children}</div>
+        <div style={{ textAlign: "center", color: "#ffffff", fontSize: "1rem", fontFamily: "'Noto Sans KR', sans-serif", fontWeight: "500", marginTop: "1rem" }}>{children}</div>
 
     )
 }

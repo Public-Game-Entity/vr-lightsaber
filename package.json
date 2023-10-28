@@ -8,7 +8,9 @@
     "start:dev": "NODE_ENV=development node app.js",
     "start": "NODE_ENV=production node app.js",
 
-    "bundle": "webpack --mode=development -w"
+    "bundle": "webpack --mode=development -w",
+    "bundle:prod": "webpack --mode=production"
+
   },
   "repository": {
     "type": "git",

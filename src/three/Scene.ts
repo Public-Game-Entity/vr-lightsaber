@@ -104,11 +104,9 @@ class Scene {
 
     }
 
-    playIdleSound() {
+    private playIdleSound() {
         const idle = new Sound(this.listener, "/public/sound/idle.mp3", true, true)
         this.sound.idle = idle
-        
-
 
         const impact1 = new Sound(this.listener, "/public/sound/impact1.mp3", false, false)
         this.sound['impact1'] = impact1
@@ -118,11 +116,9 @@ class Scene {
 
         const impact3 = new Sound(this.listener, "/public/sound/impact2.mp3", false, false)
         this.sound['impact3'] = impact3
-
-
     }
 
-    playImpactSound() {
+    private playImpactSound() {
         for (let index = 0; index < 3; index++) {
             const objectName = 'impact'+(index+1)
             if (this.sound[objectName].sound.isPlaying == false) {
@@ -207,7 +203,7 @@ class SkyBox {
         this.initSky()
     }
 
-    initSky() {
+    private initSky() {
 
         this.sky = new Sky();
         this.sky.scale.setScalar( 450000 );

@@ -66,7 +66,7 @@ class SaberModel {
     }
 
     addBlade() {
-        const length = 1.2
+        const length = 1
         const geometry = new THREE.CylinderGeometry( 0.01, 0.01, length, 32 );
         geometry.parameters
         const material = new THREE.MeshStandardMaterial();
