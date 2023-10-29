@@ -131,7 +131,7 @@ class Scene {
     }
 
     shotGun() {
-        this.gun.shot()
+        this.gun.shot({ initHeight: 0.6 + (Math.random() * 1) })
     }
 
     animate() {

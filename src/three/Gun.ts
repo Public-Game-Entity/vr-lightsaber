@@ -7,6 +7,7 @@ class GunModel {
     bullets: Bullet[];
     prevTime: number;
     nowTime: number;
+    renderer: THREE.WebGLRenderer;
 
     constructor(scene: THREE.Scene) {
         this.scene = scene
@@ -14,8 +15,9 @@ class GunModel {
 
     }
 
-    shot() {
-        const bulletClass = new Bullet(this.scene)
+    shot({ initHeight }: any) {
+
+        const bulletClass = new Bullet(this.scene, { y: initHeight })
         this.bullets.push(bulletClass)
     }
 
@@ -53,9 +55,12 @@ class Bullet {
     isCollisionAvailable: boolean;
 
     velocity: { x: number; y: number; z: number; };
-    obb: OBB;
+    initPosition: { y: number; };
 
-    constructor(scene: THREE.Scene) {
+    obb: OBB;
+    initHeight: number;
+
+    constructor(scene: THREE.Scene, initPosition: { y: number; } ) {
         this.isAvailable = false
         this.isCollisionAvailable = true
         this.scene = scene
@@ -64,6 +69,7 @@ class Bullet {
             y: 0.00000000001,
             z: 0.2
         }
+        this.initHeight = initPosition.y
         this.model = this.addModel()
 
 
@@ -89,7 +95,7 @@ class Bullet {
         this.velocity.z = dirVector.z / 100
         this.velocity.x = dirVector.x / 100
 
-        addBoundingBox.position.y = 1.3
+        addBoundingBox.position.y = this.initHeight
         const geometry = new THREE.CapsuleGeometry( 0.06, 1, 4, 8 ); 
 
         // const geometry = new THREE.BoxGeometry( 0.1, 0.1, 1 ); 
