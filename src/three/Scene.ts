@@ -119,8 +119,10 @@ class Scene {
     }
 
     private playImpactSound() {
-        for (let index = 0; index < 3; index++) {
-            const objectName = 'impact'+(index+1)
+        let objectNames = ['impact1', 'impact2', 'impact3']
+        objectNames.sort(() => Math.random() - 0.5)
+        for (let index = 0; index < objectNames.length; index++) {
+            const objectName = objectNames[index]
             if (this.sound[objectName].sound.isPlaying == false) {
                 this.sound[objectName].sound.play()
                 break
