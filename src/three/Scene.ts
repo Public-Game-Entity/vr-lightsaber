@@ -4,6 +4,7 @@ import { SaberModel } from './Saber';
 import { GunModel } from './Gun';
 import { Collision } from './Collision';
 import { Cube } from './Cube';
+import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 
 import { Sky } from 'three/examples/jsm/objects/Sky';
 
@@ -18,6 +19,9 @@ class Scene {
     skybox: SkyBox;
     listener: THREE.AudioListener;
     sound: any;
+    shotTimer: Timer;
+    isGameStart: boolean;
+    panelMesh: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
 
     constructor() {
 
@@ -48,6 +52,7 @@ class Scene {
         document.querySelector("#screen").appendChild( this.renderer.domElement );
         document.querySelector("#screen").insertAdjacentElement("beforeend", VRButton.createButton( this.renderer ))
 
+
         const dirLight = new THREE.DirectionalLight( 0xffffff );
         dirLight.position.set( -40, 400, -70 );
         dirLight.shadow.camera.top = 150;
@@ -71,6 +76,8 @@ class Scene {
 
         this.gun = new GunModel(this.scene)
         this.collisionDetect = new Collision()
+
+        this.isGameStart = false
     
         // const helper = new THREE.CameraHelper( dirLight.shadow.camera );
         // this.scene.add( helper );
@@ -96,12 +103,57 @@ class Scene {
 
         // this.addSphere()
         document.querySelector("body").addEventListener("click", this.playIdleSound.bind(this))
+        document.querySelector("#VRButton").addEventListener("click", () => {
+            this.shotTimer = new Timer(60 * 2)
+            this.isGameStart = true
+            this.showStatPanel()
+        })
 
         setInterval(() => {
-            this.shotGun()
+            if (this.isGameStart && this.shotTimer.time >= 0) {
+                console.log(this.shotTimer.time)
+                this.shotGun() 
+                this.updateStatPanel()
+            }
         }, 500)
 
 
+    }
+
+    showStatPanel() {
+        const canvas = document.createElement('canvas')
+        canvas.width = 600;
+        canvas.height = 100;
+        const ctx = canvas.getContext('2d')
+        ctx.font = 'Bold 60px Arial';
+
+        ctx.fillStyle = 'white';
+        ctx.fillText('time: 180s', 20, 60);
+        
+        
+        const material = new THREE.MeshStandardMaterial({ color: 0xffffff, map: new THREE.CanvasTexture(canvas) })
+        const geometry = new THREE.BoxGeometry(6, 1, 0.2)
+        const mesh1 = new THREE.Mesh(geometry, material)
+        mesh1.position.y = 7
+        mesh1.position.z = -10
+        mesh1.position.x = -10
+        mesh1.rotation.y = Math.PI/2
+
+        this.panelMesh = mesh1
+        this.scene.add(this.panelMesh)
+    }
+
+    updateStatPanel() {
+        const canvas = document.createElement('canvas')
+        canvas.width = 600;
+        canvas.height = 100;
+        const ctx = canvas.getContext('2d')
+        ctx.font = 'Bold 60px Arial';
+        ctx.fillStyle = 'white';
+        ctx.fillText(`time: ${this.shotTimer.time}s`, 20, 60);
+        
+        
+        this.panelMesh.material = new THREE.MeshStandardMaterial({ color: 0xffffff, map: new THREE.CanvasTexture(canvas) })
     }
 
     private playIdleSound() {
@@ -157,8 +209,6 @@ class Scene {
         this.gun.animateBullet()
         this.saber.obb.center = this.saber.model.position        
         this.saber.obb.rotation.setFromMatrix4(this.saber.bladeModel.matrixWorld)
-
-        console.log(this.gun.bullets.length)
 
         for (let index = 0; index < this.gun.bullets.length; index++) {
             if (this.gun.bullets[index].isCollisionAvailable == false) {
@@ -264,6 +314,21 @@ class Sound {
 
     public play() {
         this.sound.play();
+    }
+}
+
+
+class Timer {
+    time: number;
+    constructor(time: number) {
+        this.time = time
+        this.loop()
+    }
+
+    loop() {
+        setInterval(() => {
+            this.time -= 1
+        }, 1000)
     }
 }
 

@@ -31,6 +31,7 @@ class GunModel {
     }
 
     removeBullet({ index }: { index: number }) {
+        this.bullets[index].removeModel()
         this.bullets.splice(1, index)
     }
 
@@ -46,7 +47,9 @@ class GunModel {
             }
 
             if (this.isFar({ x: element.model.position.x, y: element.model.position.y, z: element.model.position.z })) {
+                element.isAvailable = false
                 this.removeBullet({ index: index })
+                continue
             }
 
             element.model.position.z += element.velocity.z * deltaTime
@@ -135,6 +138,14 @@ class Bullet {
         this.isAvailable = true
         this.obb = new OBB(addBoundingBox.position, new THREE.Vector3(0.07,0.07,0.07))
         return addBoundingBox
+    }
+
+    public removeModel() {
+        this.model.geometry.dispose()
+        this.scene.remove( this.model );
+
+        this.model = undefined
+
     }
 }
 

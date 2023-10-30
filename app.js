@@ -12,21 +12,21 @@ app.use('/', express.static('dist'));
 
 
 
-if (process.env.NODE_ENV == "production") {
+// if (process.env.NODE_ENV == "production") {
 
-} else {
-    const options = {
-        key: fs.readFileSync('./key/private.pem'),
-        cert: fs.readFileSync('./key/public.pem')
-    };
+// } else {
+//     const options = {
+//         key: fs.readFileSync('./key/private.pem'),
+//         cert: fs.readFileSync('./key/public.pem')
+//     };
 
-    const server = https.createServer(options, app);
+//     const server = https.createServer(options, app);
 
-    server.listen(port, () => {
-      console.log("HTTPS server listening on port " + port);
-    });
-}    
+//     server.listen(port, () => {
+//       console.log("HTTPS server listening on port " + port);
+//     });
+// }    
 
-// app.listen(port, err => {
-//     console.log(`[ + ] The server is running.`);
-// });
+app.listen(port, err => {
+    console.log(`[ + ] The server is running.`);
+});
