@@ -21,6 +21,20 @@ class GunModel {
         this.bullets.push(bulletClass)
     }
 
+    isFar({ x, y, z }: any) {
+        const reference = 50
+        if (reference < Math.abs(x) || reference < Math.abs(y) || reference < Math.abs(z)) {
+            return true
+        }
+
+        return false
+    }
+
+    removeBullet({ index }: { index: number }) {
+        this.bullets[index].removeModel()
+        this.bullets.splice(1, index)
+    }
+
     animateBullet() {
         this.nowTime = Date.now()
 
@@ -31,9 +45,17 @@ class GunModel {
             if (element.isAvailable == false) {
                 continue
             }
+
+            if (this.isFar({ x: element.model.position.x, y: element.model.position.y, z: element.model.position.z })) {
+                element.isAvailable = false
+                this.removeBullet({ index: index })
+                continue
+            }
+
             element.model.position.z += element.velocity.z * deltaTime
             element.model.position.y += element.velocity.y * deltaTime
             element.model.position.x += element.velocity.x * deltaTime
+
 
             const e = new THREE.Euler( element.velocity.x, element.velocity.y, element.velocity.z, 'XYZ' );
             const mx = new THREE.Matrix4().lookAt(new THREE.Vector3(element.velocity.x, element.velocity.y, element.velocity.z),new THREE.Vector3(0,0,0),new THREE.Vector3(0,1,0));
@@ -116,6 +138,14 @@ class Bullet {
         this.isAvailable = true
         this.obb = new OBB(addBoundingBox.position, new THREE.Vector3(0.07,0.07,0.07))
         return addBoundingBox
+    }
+
+    public removeModel() {
+        this.model.geometry.dispose()
+        this.scene.remove( this.model );
+
+        this.model = undefined
+
     }
 }
 
