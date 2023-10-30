@@ -158,6 +158,8 @@ class Scene {
         this.saber.obb.center = this.saber.model.position        
         this.saber.obb.rotation.setFromMatrix4(this.saber.bladeModel.matrixWorld)
 
+        console.log(this.gun.bullets.length)
+
         for (let index = 0; index < this.gun.bullets.length; index++) {
             if (this.gun.bullets[index].isCollisionAvailable == false) {
                 continue
