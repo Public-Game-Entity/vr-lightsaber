@@ -149,7 +149,6 @@ class SaberModel {
     }
 
     addBoundingBox() {
-
         const addBoundingBox = new THREE.Mesh(); 
         const model = this.addModel()
         this.bladeModel = this.addBlade()
@@ -158,17 +157,9 @@ class SaberModel {
 
         model.add(this.bladeModel)
         model.rotation.x = - Math.PI/3.6
-
         addBoundingBox.add(model)
 
-
         return addBoundingBox
-    }
-
-
-
-    animateSaber() {
-
     }
 }
 
