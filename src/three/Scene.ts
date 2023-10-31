@@ -24,15 +24,13 @@ class Scene {
     panelMesh: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
 
     constructor() {
-
         this.init()
     }
 
-    async init() {
+    init() {
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color( 0xffffff );
         this.scene.fog = new THREE.Fog( 0xeddfdf, 10, 50 );
-    
         
         this.camera = new THREE.PerspectiveCamera( 90, window.innerWidth / window.innerHeight, 0.01, 100 );
         this.camera.position.set( 0, 3, 7 );
@@ -79,9 +77,6 @@ class Scene {
 
         this.isGameStart = false
     
-        // const helper = new THREE.CameraHelper( dirLight.shadow.camera );
-        // this.scene.add( helper );
-
         const newCube = new Cube({
             x: 2,
             y: 1,
@@ -91,14 +86,11 @@ class Scene {
             yw: 4,
             zw: 2
         })
-
         const newCubeMesh = newCube.create()
-
         this.scene.add(newCubeMesh)
 
         this.skybox = new SkyBox(this.scene, this.renderer)
         
-        this.animate();
         this.sphere = []
 
         // this.addSphere()
@@ -117,10 +109,11 @@ class Scene {
             }
         }, 500)
 
+        this.animate();
 
     }
 
-    showStatPanel() {
+    private showStatPanel() {
         const canvas = document.createElement('canvas')
         canvas.width = 600;
         canvas.height = 100;
@@ -143,7 +136,7 @@ class Scene {
         this.scene.add(this.panelMesh)
     }
 
-    updateStatPanel() {
+    private updateStatPanel() {
         const canvas = document.createElement('canvas')
         canvas.width = 600;
         canvas.height = 100;
@@ -182,24 +175,18 @@ class Scene {
         }
     }
 
-    shotGun() {
+    private shotGun() {
         this.gun.shot({ initHeight: 0.6 + (Math.random() * 1) })
     }
 
-    animate() {
+    private animate() {
         requestAnimationFrame( this.animate.bind(this) );
 
         this.renderer.render( this.scene, this.camera );
     }
 
-    animateXR() {
+    private animateXR() {
         const controller = this.renderer.xr.getController(0); 
-        // console.log(controller)
-
-
-
-        const session = this.renderer.xr.getSession();
-        // session.inputSources[0].gamepad.vibrationActuator.playEffect("dual-rumble", )
 
         this.saber.model.position.set(controller.position.x, controller.position.y, controller.position.z)
         this.saber.model.rotation.x = controller.rotation.x
@@ -215,27 +202,22 @@ class Scene {
                 continue
             }
 
-            
             const isCollide  = this.saber.obb.intersectsOBB(this.gun.bullets[index].obb)
 
             if (isCollide) {
                 this.playImpactSound()
-
                 this.gun.bullets[index].velocity.z = -this.gun.bullets[index].velocity.z
                 this.gun.bullets[index].velocity.x = -(this.gun.bullets[index].velocity.x + (Math.random() - 0.5) / 50)
                 this.gun.bullets[index].velocity.y = (Math.random() - 0.5) / 40
                 this.gun.bullets[index].isCollisionAvailable = false
-
             }
         }
-
-
 
         this.renderer.render( this.scene, this.camera );
     }
 
 
-    addSphere() {
+    private addSphere() {
         const geometry = new THREE.SphereGeometry( 0.1, 32, 16 ); 
         const material = new THREE.MeshBasicMaterial( { color: 0xffff00 } ); 
         const sphere = new THREE.Mesh( geometry, material ); 
@@ -325,7 +307,7 @@ class Timer {
         this.loop()
     }
 
-    loop() {
+    private loop() {
         setInterval(() => {
             this.time -= 1
         }, 1000)

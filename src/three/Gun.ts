@@ -12,16 +12,14 @@ class GunModel {
     constructor(scene: THREE.Scene) {
         this.scene = scene
         this.bullets = []
-
     }
 
-    shot({ initHeight }: any) {
-
+    public shot({ initHeight }: any) {
         const bulletClass = new Bullet(this.scene, { y: initHeight })
         this.bullets.push(bulletClass)
     }
 
-    isFar({ x, y, z }: any) {
+    private isFar({ x, y, z }: any) {
         const reference = 50
         if (reference < Math.abs(x) || reference < Math.abs(y) || reference < Math.abs(z)) {
             return true
@@ -56,8 +54,6 @@ class GunModel {
             element.model.position.y += element.velocity.y * deltaTime
             element.model.position.x += element.velocity.x * deltaTime
 
-
-            const e = new THREE.Euler( element.velocity.x, element.velocity.y, element.velocity.z, 'XYZ' );
             const mx = new THREE.Matrix4().lookAt(new THREE.Vector3(element.velocity.x, element.velocity.y, element.velocity.z),new THREE.Vector3(0,0,0),new THREE.Vector3(0,1,0));
             const qt = new THREE.Quaternion().setFromRotationMatrix(mx);
             element.model.rotation.setFromQuaternion( qt )
@@ -66,19 +62,17 @@ class GunModel {
         }
 
         this.prevTime = Date.now()
-
     }
 }
+
 
 class Bullet {
     model: THREE.Mesh;
     scene: THREE.Scene;
     isAvailable: boolean;
     isCollisionAvailable: boolean;
-
     velocity: { x: number; y: number; z: number; };
     initPosition: { y: number; };
-
     obb: OBB;
     initHeight: number;
 
@@ -93,14 +87,11 @@ class Bullet {
         }
         this.initHeight = initPosition.y
         this.model = this.addModel()
-
-
     }
 
-    radianToPosition({ angle, offset }: { angle: number; offset: number }) {
+    private radianToPosition({ angle, offset }: { angle: number; offset: number }) {
         const x = Math.cos(angle * Math.PI / 180) * offset
         const y = Math.sin(angle * Math.PI / 180) * offset
-    
         return { x: x, y: y }
     }
 
@@ -110,27 +101,17 @@ class Bullet {
         const randomPosition = this.radianToPosition({ angle: randomAngle, offset: 20 })
         addBoundingBox.position.z = randomPosition.x
         addBoundingBox.position.x = randomPosition.y
+        addBoundingBox.position.y = this.initHeight
 
         const dir = new THREE.Vector3(); 
-
         const dirVector = dir.subVectors( new THREE.Vector3(0,2, 1), new THREE.Vector3(addBoundingBox.position.x, addBoundingBox.position.y, addBoundingBox.position.z) ).normalize();
         this.velocity.z = dirVector.z / 100
         this.velocity.x = dirVector.x / 100
 
-        addBoundingBox.position.y = this.initHeight
         const geometry = new THREE.CapsuleGeometry( 0.06, 1, 4, 8 ); 
-
-        // const geometry = new THREE.BoxGeometry( 0.1, 0.1, 1 ); 
         const material = new THREE.MeshBasicMaterial( {color: 0xf73c28} ); 
         const cube = new THREE.Mesh( geometry, material ); 
-
         cube.rotation.x = Math.PI/2
-
-        // const light = new THREE.PointLight( 0xf73c28 );
-        // light.intensity = 100
-        // light.decay = 40
-        // light.distance = 10
-        // cube.add(light)
 
         addBoundingBox.add(cube)
 
@@ -143,9 +124,7 @@ class Bullet {
     public removeModel() {
         this.model.geometry.dispose()
         this.scene.remove( this.model );
-
         this.model = undefined
-
     }
 }
 

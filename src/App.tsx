@@ -8,8 +8,6 @@ const App: any = () => {
     return (
         <div>
             <Main isOpen={isOpen}></Main>
-
-
         </div>
     );
 };
