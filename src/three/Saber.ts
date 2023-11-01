@@ -92,7 +92,7 @@ class SaberModel {
 
     setBladeLength({ scale }: { scale: number }) {
         this.bladeModel.scale.y = scale
-        this.bladeModel.position.y = scale/2 + 0.1
+        this.bladeModel.position.y = scale/2 
     }
 
 
@@ -130,20 +130,20 @@ class SaberModel {
     }
 
     offBlade() {
-        let scale = 1.2001
+        let scale = 1.2
         clearInterval(this.onInterval)
         this.onInterval = setInterval(() => {
-            if (scale <= 0) {
-                this.setBladeLength({ scale: 0.01 })
-                this.isOn = false
-                this.updateIntensityBladeLight({ intensity: 0 })
-
-                clearInterval(this.onInterval)
-            }
             scale -= 0.05
             this.updateIntensityBladeLight({ intensity: scale/2 })
-
             this.setBladeLength({ scale: scale })
+
+            if (scale < 0) {
+                this.setBladeLength({ scale: 0.0001 })
+                this.isOn = false
+                this.updateIntensityBladeLight({ intensity: 0 })
+                clearInterval(this.onInterval)
+            }
+
         }, 40)
     }
 
