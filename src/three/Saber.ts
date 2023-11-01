@@ -19,8 +19,10 @@ class SaberModel {
     obb: OBB
     sound: any;
     listener: THREE.AudioListener;
+    lightList: THREE.PointLight[];
 
     constructor(renderer: THREE.WebGLRenderer, listener: THREE.AudioListener) {
+        this.lightList = []
         this.listener = listener
         this.isAvailable = false
         this.isOn = true
@@ -110,15 +112,19 @@ class SaberModel {
 
     onBlade() {
         let scale = 0.001
+
         clearInterval(this.onInterval)
         this.onInterval = setInterval(() => {
             if (scale >= 1.1) {
                 this.setBladeLength({ scale: 1.2 })
                 this.isOn = true
+                this.updateIntensityBladeLight({ intensity: 0.5 })
 
                 clearInterval(this.onInterval)
             }
             scale += 0.05
+            this.updateIntensityBladeLight({ intensity: scale/2 })
+
             this.setBladeLength({ scale: scale })
         }, 40)
     }
@@ -130,13 +136,24 @@ class SaberModel {
             if (scale <= 0) {
                 this.setBladeLength({ scale: 0.01 })
                 this.isOn = false
+                this.updateIntensityBladeLight({ intensity: 0 })
 
                 clearInterval(this.onInterval)
             }
             scale -= 0.05
+            this.updateIntensityBladeLight({ intensity: scale/2 })
+
             this.setBladeLength({ scale: scale })
         }, 40)
     }
+
+
+    private updateIntensityBladeLight({ intensity }: any) {
+        for (let index = 0; index < this.lightList.length; index++) {
+            this.lightList[index].intensity = intensity
+        }
+    }
+
 
     addBladeLight({ cylinder, y }: { cylinder: THREE.Mesh, y: number }) {
         const light = new THREE.PointLight( 0xa1cbff );
@@ -144,6 +161,8 @@ class SaberModel {
         light.decay = 400
         light.distance = 500
         light.position.y = y
+
+        this.lightList.push(light)
 
         cylinder.add(light)
     }
