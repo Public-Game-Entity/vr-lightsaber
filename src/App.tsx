@@ -15,6 +15,9 @@ const App: any = () => {
     const update = () => {
         const state = store.getState()
         setGameOver(state.game.isGameOver)
+        if (state.game.isGameOver == true) {
+            location.href = '/'
+        }
     }
 
     useEffect(() => {

@@ -163,8 +163,7 @@ class Scene {
     }
 
     private playIdleSound() {
-        const idle = new Sound(this.listener, "/public/sound/idle.mp3", true, true)
-        this.sound.idle = idle
+
 
         const impact1 = new Sound(this.listener, "/public/sound/impact1.mp3", false, false)
         this.sound['impact1'] = impact1

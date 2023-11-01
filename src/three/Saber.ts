@@ -30,13 +30,16 @@ class SaberModel {
         this.model = this.addBoundingBox()
         this.renderer = renderer
         this.sound = {}
-        this.initSound()
+        document.querySelector("body").addEventListener("click", this.initSound.bind(this))
 
         const controller1 = renderer.xr.getController(0);
         controller1.addEventListener('selectstart', this.switchBlade.bind(this));
     }
 
     initSound() {
+        const idle = new Sound(this.listener, "/public/sound/idle.mp3", true, true)
+        this.sound.idle = idle
+
         const on = new Sound(this.listener, "/public/sound/on.mp3", false, false)
         this.sound.on = on
 
@@ -101,13 +104,15 @@ class SaberModel {
         if (this.isOn) {
             this.offBlade()
             this.sound.off.play()
+            this.sound.idle.sound.pause()
 
             return 0
         }
 
         this.onBlade()
         this.sound.on.play()
-        
+        this.sound.idle.sound.play()
+
     }
 
     onBlade() {
