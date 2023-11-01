@@ -1,12 +1,14 @@
 import * as THREE from 'three';
+import store from '../store'
+
+import { setGameOver } from '../features/gameSlice'
 import { VRButton } from 'three/examples/jsm/webxr/VRButton';
 import { SaberModel } from './Saber';
 import { GunModel } from './Gun';
 import { Collision } from './Collision';
 import { Cube } from './Cube';
-import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
-
 import { Sky } from 'three/examples/jsm/objects/Sky';
+
 
 class Scene {
     scene: THREE.Scene
@@ -100,12 +102,23 @@ class Scene {
             this.isGameStart = true
             this.showStatPanel()
         })
+        
 
         setInterval(() => {
             if (this.isGameStart && this.shotTimer.time >= 0) {
                 console.log(this.shotTimer.time)
                 this.shotGun() 
                 this.updateStatPanel()
+                if (this.shotTimer.time == 0) {
+                    setTimeout(() => {
+                        this.renderer.xr.getSession().end();
+
+                        store.dispatch(setGameOver({
+                            isGameOver: true
+                        }))
+                    }, 5000)
+
+                }
             }
         }, 500)
 
