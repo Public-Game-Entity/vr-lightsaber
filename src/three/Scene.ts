@@ -99,12 +99,17 @@ class Scene {
 
         // this.addSphere()
         document.querySelector("body").addEventListener("click", this.playIdleSound.bind(this))
-        document.querySelector("#VRButton").addEventListener("click", () => {
-            this.shotTimer = new Timer(60 * 2)
-            this.isGameStart = true
-            this.showStatPanel()
-            this.showInterval()
-        })
+        try {
+            document.querySelector("#VRButton").addEventListener("click", () => {
+                this.shotTimer = new Timer(60 * 2)
+                this.isGameStart = true
+                this.showStatPanel()
+                this.showInterval()
+            })
+        } catch (error) {
+            
+        }
+
         
 
 
