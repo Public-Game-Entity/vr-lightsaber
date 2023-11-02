@@ -29,9 +29,9 @@ const Main = ({ isOpen = true }: MainType) => {
             shotFrequency: 500
         },
         "hard": {
-            minRadian: 120,
+            minRadian: 160,
             maxRadian: 200,
-            shotFrequency: 200
+            shotFrequency: 300
         }
     }
 
