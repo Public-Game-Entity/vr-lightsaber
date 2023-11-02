@@ -1,12 +1,14 @@
 import * as THREE from 'three';
+import store from '../store'
+
+import { setGameOver } from '../features/gameSlice'
 import { VRButton } from 'three/examples/jsm/webxr/VRButton';
 import { SaberModel } from './Saber';
 import { GunModel } from './Gun';
 import { Collision } from './Collision';
 import { Cube } from './Cube';
-import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
-
 import { Sky } from 'three/examples/jsm/objects/Sky';
+
 
 class Scene {
     scene: THREE.Scene
@@ -42,10 +44,12 @@ class Scene {
         this.sound = {}
 
         this.renderer = new THREE.WebGLRenderer();
+        this.renderer.setPixelRatio( window.devicePixelRatio );
         this.renderer.setSize( window.innerWidth, window.innerHeight );
         this.renderer.shadowMap.enabled = true
         this.renderer.xr.enabled = true;
         this.renderer.setAnimationLoop(this.animateXR.bind(this));
+
 
         document.querySelector("#screen").appendChild( this.renderer.domElement );
         document.querySelector("#screen").insertAdjacentElement("beforeend", VRButton.createButton( this.renderer ))
@@ -69,7 +73,7 @@ class Scene {
         mesh.receiveShadow = true;
         this.scene.add(mesh);
 
-        this.saber = new SaberModel(this.renderer, this.listener)
+        this.saber = new SaberModel(this.renderer, this.listener, this.scene, this.camera)
         this.scene.add(this.saber.model)
 
         this.gun = new GunModel(this.scene)
@@ -99,18 +103,35 @@ class Scene {
             this.shotTimer = new Timer(60 * 2)
             this.isGameStart = true
             this.showStatPanel()
+            this.showInterval()
         })
+        
+
+
+        this.animate();
+
+    }
+
+    private showInterval() {
+        const state = store.getState()
 
         setInterval(() => {
             if (this.isGameStart && this.shotTimer.time >= 0) {
                 console.log(this.shotTimer.time)
                 this.shotGun() 
                 this.updateStatPanel()
+                if (this.shotTimer.time == 0) {
+                    setTimeout(() => {
+                        this.renderer.xr.getSession().end();
+
+                        store.dispatch(setGameOver({
+                            isGameOver: true
+                        }))
+                    }, 5000)
+
+                }
             }
-        }, 500)
-
-        this.animate();
-
+        }, state.game.gameMode.shotFrequency)
     }
 
     private showStatPanel() {
@@ -150,8 +171,7 @@ class Scene {
     }
 
     private playIdleSound() {
-        const idle = new Sound(this.listener, "/public/sound/idle.mp3", true, true)
-        this.sound.idle = idle
+
 
         const impact1 = new Sound(this.listener, "/public/sound/impact1.mp3", false, false)
         this.sound['impact1'] = impact1

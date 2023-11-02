@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 
 import { OBB } from 'three/examples/jsm/math/OBB';
+import store from '../store';
 
 class GunModel {
     scene: THREE.Scene;
@@ -20,7 +21,7 @@ class GunModel {
     }
 
     private isFar({ x, y, z }: any) {
-        const reference = 50
+        const reference = 40
         if (reference < Math.abs(x) || reference < Math.abs(y) || reference < Math.abs(z)) {
             return true
         }
@@ -41,11 +42,11 @@ class GunModel {
 
             const element = this.bullets[index];
             if (element.isAvailable == false) {
+                this.removeBullet({ index: index })
                 continue
             }
 
             if (this.isFar({ x: element.model.position.x, y: element.model.position.y, z: element.model.position.z })) {
-                element.isAvailable = false
                 this.removeBullet({ index: index })
                 continue
             }
@@ -96,8 +97,11 @@ class Bullet {
     }
 
     addModel() {
+        const state = store.getState()
+
         const addBoundingBox = new THREE.Mesh(); 
-        const randomAngle = 170 + Math.random() * 30
+        const randomAngle = ( Math.random() * ( state.game.gameMode.maxRadian - state.game.gameMode.minRadian )  ) + state.game.gameMode.minRadian
+
         const randomPosition = this.radianToPosition({ angle: randomAngle, offset: 20 })
         addBoundingBox.position.z = randomPosition.x
         addBoundingBox.position.x = randomPosition.y
@@ -122,9 +126,15 @@ class Bullet {
     }
 
     public removeModel() {
-        this.model.geometry.dispose()
-        this.scene.remove( this.model );
-        this.model = undefined
+        try {
+            this.model.geometry.dispose()
+            this.scene.remove( this.model );
+            this.isAvailable = false
+        } catch (error) {
+            
+        }
+
+
     }
 }
 
