@@ -6,6 +6,8 @@ import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OBB } from 'three/examples/jsm/math/OBB';
 import { Sound } from './Scene';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
+
 
 
 class SaberModel {
@@ -20,17 +22,23 @@ class SaberModel {
     sound: any;
     listener: THREE.AudioListener;
     lightList: THREE.PointLight[];
+    camera: THREE.Camera;
+    scene: THREE.Scene;
+    composer: EffectComposer;
 
-    constructor(renderer: THREE.WebGLRenderer, listener: THREE.AudioListener) {
+    constructor(renderer: THREE.WebGLRenderer, listener: THREE.AudioListener, scene: THREE.Scene, camera: THREE.Camera) {
         this.lightList = []
         this.listener = listener
         this.isAvailable = false
         this.isOn = true
         this.bladeLength = 0
-        this.model = this.addBoundingBox()
         this.renderer = renderer
+        this.camera = camera
+        this.scene = scene
         this.sound = {}
-        document.querySelector("body").addEventListener("click", this.initSound.bind(this))
+        this.model = this.addBoundingBox()
+
+        document.querySelector("#VRButton").addEventListener("click", this.initSound.bind(this))
 
         const controller1 = renderer.xr.getController(0);
         controller1.addEventListener('selectstart', this.switchBlade.bind(this));
@@ -81,6 +89,9 @@ class SaberModel {
 
         const cylinder = new THREE.Mesh( geometry, material );
         cylinder.position.y = length/2
+
+        cylinder.material.emissiveIntensity = 10
+        cylinder.layers.enable( 1 );
 
         for (let index = 0; index < 8; index++) {
             this.addBladeLight({

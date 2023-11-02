@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 
 import { OBB } from 'three/examples/jsm/math/OBB';
+import store from '../store';
 
 class GunModel {
     scene: THREE.Scene;
@@ -96,8 +97,11 @@ class Bullet {
     }
 
     addModel() {
+        const state = store.getState()
+
         const addBoundingBox = new THREE.Mesh(); 
-        const randomAngle = 170 + Math.random() * 30
+        const randomAngle = ( Math.random() * ( state.game.gameMode.maxRadian - state.game.gameMode.minRadian )  ) + state.game.gameMode.minRadian
+
         const randomPosition = this.radianToPosition({ angle: randomAngle, offset: 20 })
         addBoundingBox.position.z = randomPosition.x
         addBoundingBox.position.x = randomPosition.y

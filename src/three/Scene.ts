@@ -44,10 +44,12 @@ class Scene {
         this.sound = {}
 
         this.renderer = new THREE.WebGLRenderer();
+        this.renderer.setPixelRatio( window.devicePixelRatio );
         this.renderer.setSize( window.innerWidth, window.innerHeight );
         this.renderer.shadowMap.enabled = true
         this.renderer.xr.enabled = true;
         this.renderer.setAnimationLoop(this.animateXR.bind(this));
+
 
         document.querySelector("#screen").appendChild( this.renderer.domElement );
         document.querySelector("#screen").insertAdjacentElement("beforeend", VRButton.createButton( this.renderer ))
@@ -71,7 +73,7 @@ class Scene {
         mesh.receiveShadow = true;
         this.scene.add(mesh);
 
-        this.saber = new SaberModel(this.renderer, this.listener)
+        this.saber = new SaberModel(this.renderer, this.listener, this.scene, this.camera)
         this.scene.add(this.saber.model)
 
         this.gun = new GunModel(this.scene)
@@ -101,8 +103,17 @@ class Scene {
             this.shotTimer = new Timer(60 * 2)
             this.isGameStart = true
             this.showStatPanel()
+            this.showInterval()
         })
         
+
+
+        this.animate();
+
+    }
+
+    private showInterval() {
+        const state = store.getState()
 
         setInterval(() => {
             if (this.isGameStart && this.shotTimer.time >= 0) {
@@ -120,10 +131,7 @@ class Scene {
 
                 }
             }
-        }, 500)
-
-        this.animate();
-
+        }, state.game.gameMode.shotFrequency)
     }
 
     private showStatPanel() {
