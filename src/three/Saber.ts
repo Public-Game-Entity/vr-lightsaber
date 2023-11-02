@@ -38,7 +38,12 @@ class SaberModel {
         this.sound = {}
         this.model = this.addBoundingBox()
 
-        document.querySelector("#VRButton").addEventListener("click", this.initSound.bind(this))
+        try {
+            document.querySelector("#VRButton").addEventListener("click", this.initSound.bind(this))
+
+        } catch (error) {
+            
+        }
 
         const controller1 = renderer.xr.getController(0);
         controller1.addEventListener('selectstart', this.switchBlade.bind(this));
